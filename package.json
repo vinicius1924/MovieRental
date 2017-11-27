@@ -1,0 +1,41 @@
+{
+  "name": "movierental",
+  "version": "1.0.0",
+  "description": "Backend developer exercise 4all",
+  "main": "index.js",
+  "scripts": {
+    "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules",
+    "debug": "node --inspect index.js",
+    "dev": "nodemon index.js --exec babel-node",
+    "prod": "node dist/index.js"
+  },
+  "jshintConfig": {
+    "esversion": 6
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vinicius1924/MovieRental.git"
+  },
+  "author": "Vinicius Santos",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vinicius1924/MovieRental/issues"
+  },
+  "homepage": "https://github.com/vinicius1924/MovieRental#readme",
+  "dependencies": {
+    "bcrypt": "^1.0.3",
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "jsonwebtoken": "^8.1.0",
+    "lodash": "^4.17.4",
+    "mysql2": "^1.5.1",
+    "sequelize": "^4.22.15"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "nodemon": "^1.12.1",
+    "rimraf": "^2.6.2"
+  }
+}
