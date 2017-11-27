@@ -30,9 +30,9 @@ module.exports = (router, database) =>
             if(movie)
             {
                /* 
-                  * Pega a quantidade de cópias que se quer alugar caso tenha sido mandado
-                  * na requisição, senão utiliza 1 como número de cópias 
-                  */
+                * Pega a quantidade de cópias que se quer alugar caso tenha sido mandado
+                * na requisição, senão utiliza 1 como número de cópias 
+                */
                let amount = req.body.amount ? parseInt(req.body.amount) : 1;
 
                /* 
