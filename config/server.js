@@ -35,8 +35,8 @@ const port = 3003;
  * feita uma interpretação e o conteúdo será transformado em um objeto para ser usado dentro 
  * do backend
  */
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true})); // para analisar application/x-www-form-urlencoded
+app.use(bodyParser.json()); // para analisar application/json
 app.use(cors());
 
 /* Retorna uma instância da classe "http.Server" do node */
@@ -48,6 +48,4 @@ server.listen(port, () =>
    console.log(`BACKEND is running on port ${port}`);
 });
 
-// module.exports.server = server;
 module.exports = toExport;
-// module.exports.router = router;
