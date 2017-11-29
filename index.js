@@ -14,7 +14,7 @@
  */
 const server = require("./config/server");
 const database = require("./config/database");
-//database.sequelize.sync();
+
 require("./api/routes/api_routes")(server.app, server.router);
 require("./api/routes/unprotected/login")(server.app, database);
 require("./api/routes/unprotected/new_user")(server.app, database);

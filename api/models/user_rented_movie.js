@@ -2,35 +2,7 @@ module.exports = (sequelize, Sequelize) =>
 {
    const UserRentedMovie = sequelize.define("user_rented_movie",
    {
-      // id:
-      // {
-      //    type: Sequelize.INTEGER,
-      //    primaryKey: true,
-      //    autoIncrement: true,
-      // },
-
-      quantity:
-      {
-         type: Sequelize.SMALLINT, 
-         allowNull: false,
-         validate:
-         {
-            isNumeric: { msg: "only numbers allowed in quantity" },
-            notNull: { msg: "quantity required" },
-            
-            max: 
-            {
-               args: [65535],
-               msg: "quantity maximum value is 65535"
-            },
-
-            min: 
-            {
-               args: [0],
-               msg: "quantity minimum value is 0"
-            }
-         }
-      }
+      
    },
    {
       /* 

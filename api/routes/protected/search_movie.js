@@ -3,28 +3,20 @@ module.exports = (router, database) =>
    router.route("/search_movie_by_name/:name")
    .get((req, res) =>
    {
-      database.Movie.findAll(
-      {
-         attributes: ["id", "title", "director"],
-         
-         where:
+      database.sequelize.query("SELECT movie.id, movie.title, movie.director, " + 
+      "(movie.number_of_copies - movie.located_copies) " +
+      "AS available_copies " +
+      "FROM movie " +
+      "WHERE movie.title " +
+      "LIKE :name", 
+      { 
+         replacements: 
          { 
-            title: 
-            { 
-               $like: "%" + req.params.name + "%"
-            },
-
-            /* 
-             * o que está abaixo irá mostrar somente os filmes 
-             * que estão disponíveis para ser alugados
-             */
-            located_copies: 
-            { 
-               $lt: database.sequelize.col("number_of_copies")
-            }
-         }
+            name: "%" + req.params.name + "%"
+         }, 
+         type: database.sequelize.QueryTypes.SELECT 
       })
-      .then(movies => 
+      .then((movies) => 
       {
          if(movies.length != 0)
          {

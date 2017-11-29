@@ -1,6 +1,6 @@
 /* jsonwebtoken é usado para criar, assinar e verificar tokens */
 const jwt = require("jsonwebtoken");
-const env = require('../../../config/.env')
+const env = require('../../../config/.env');
 const bcrypt = require("bcrypt");
 
 module.exports = (app, database) =>
@@ -29,12 +29,10 @@ module.exports = (app, database) =>
                 */
                if(user)
                {
-                  console.log("encontrou usuário pelo email");
-
                   /* Compara a senha digitada pelo usuário com a senha do banco de dados */
                   bcrypt.compare(req.body.password, user.password).then((response) =>
                   {
-                     /* se res == true então a senha digitada pelo usuário está certa */
+                     /* se response == true então a senha digitada pelo usuário está certa */
                      if(response)
                      {
                         /* 
@@ -63,6 +61,11 @@ module.exports = (app, database) =>
                   errors.push("username/password invalid");
                   res.status(500).json({errors});
                }
+            })
+            .catch((error) =>
+            {
+               let errors = Utils.parseSequelizeErrors(error);
+               res.status(500).json({errors});
             });
          }
          else

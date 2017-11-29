@@ -3,22 +3,15 @@ module.exports = (router, database) =>
    router.route("/movies")
    .get((req, res) =>
    {
-      database.Movie.findAll(
-      {
-         attributes: ["title", "director"],
-         /* 
-          * a cláusula where implementada abaixo somente irá mostrar os filmes 
-          * que estão disponíveis para ser alugados
-          */
-         where:
-         { 
-            located_copies: 
-            { 
-               $lt: database.sequelize.col("number_of_copies")
-            } 
-         }
+      database.sequelize.query("SELECT movie.id, movie.title, movie.director, " +
+      "(movie.number_of_copies - movie.located_copies) " +
+      "AS available_copies " +
+      "FROM movie " +
+      "WHERE (movie.number_of_copies - movie.located_copies) > 0",
+      { 
+         type: database.sequelize.QueryTypes.SELECT
       })
-      .then(movies => 
+      .then((movies) => 
       {
          if(movies.length != 0)
          {
@@ -27,7 +20,7 @@ module.exports = (router, database) =>
          else
          {
             let errors = [];
-            errors.push("No movies found");
+            errors.push("no available movies for rent");
             res.status(500).json({errors});
          }
       });

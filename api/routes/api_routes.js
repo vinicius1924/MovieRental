@@ -23,7 +23,7 @@ module.exports = (app, router) =>
     */
 	router.use((req, res, next) =>
 	{
-		console.log("chamei /api/");
+		//console.log("chamei /api/");
 
 		if(req.method === "OPTIONS")
 		{
@@ -84,8 +84,8 @@ module.exports = (app, router) =>
 					      	else
 					      	{
                            req.decodedToken = decoded;
-                           console.log("id de quem está fazendo a chamada = " + decoded.id);
-					      		console.log("chamei next()");
+                           //console.log("id de quem está fazendo a chamada = " + decoded.id);
+					      		//console.log("chamei next()");
 					      		next();
 					      	}
 					      }

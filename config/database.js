@@ -67,7 +67,9 @@ const sequelize = new Sequelize(databseName, userName, password,
    dialect: "mysql",
    host: connectionHost,
    port: connectionPort,
-   operatorsAliases
+   operatorsAliases,
+   // // disable logging; default: console.log
+   // logging: false
 });
 
 const toExport = {};

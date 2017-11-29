@@ -51,13 +51,13 @@ module.exports = (sequelize, Sequelize) =>
             max: 
             {
                args: [65535],
-               msg: "located_copies maximum value is 65535"
+               msg: "number_of_copies maximum value is 65535"
             },
 
             min: 
             {
                args: [0],
-               msg: "located_copies minimum value is 0"
+               msg: "number_of_copies minimum value is 0"
             }
          }
       },
@@ -70,7 +70,7 @@ module.exports = (sequelize, Sequelize) =>
          {
             isNumeric: { msg: "only numbers allowed in located_copies" },
             notNull: { msg: "located_copies required" },
-
+            
             max: 
             {
                args: [65535],
