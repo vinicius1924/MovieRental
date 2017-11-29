@@ -50,12 +50,7 @@ module.exports = (sequelize, Sequelize) =>
 
       token:
       {
-         type: Sequelize.STRING, 
-         allowNull: false,
-         validate:
-         {
-            notNull: { msg: "token required" }
-         }
+         type: Sequelize.STRING
       }
    },
    {

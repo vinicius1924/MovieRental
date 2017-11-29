@@ -8,8 +8,6 @@ module.exports = (app, database) =>
    app.route("/login")
    .post((req, res) =>
    {
-      console.log("chamei POST /login");
-
       if(checkIfEmailWasSent(req.body.email))
       {
          if(checkIfPasswordWasSent(req.body.password))
@@ -63,7 +61,6 @@ module.exports = (app, database) =>
                }
                else
                {
-                  console.log("NÃO encontrou usuário pelo email");
                   let errors = [];
                   errors.push("username/password invalid");
                   res.status(500).json({errors});

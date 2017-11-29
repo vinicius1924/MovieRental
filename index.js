@@ -18,6 +18,7 @@ const database = require("./config/database");
 require("./api/routes/api_routes")(server.app, server.router, database);
 require("./api/routes/unprotected/login")(server.app, database);
 require("./api/routes/unprotected/new_user")(server.app, database);
+require("./api/routes/protected/logout")(server.router, database);
 require("./api/routes/protected/movie_rent")(server.router, database);
 require("./api/routes/protected/movie_return")(server.router, database);
 require("./api/routes/protected/movies")(server.router, database);
