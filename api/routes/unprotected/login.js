@@ -43,8 +43,15 @@ module.exports = (app, database) =>
                         {
                            expiresIn: "1d" // token expira em 1 dia
                         });
-            
-                        res.status(200).json({name: user.name, email: user.email, token: token});
+
+                        user.update(
+                        {
+                           token: token
+                        })
+                        .then(() =>
+                        {
+                           res.status(200).json({name: user.name, email: user.email, token: token});
+                        });
                      }
                      else
                      {

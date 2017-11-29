@@ -5,9 +5,7 @@ const env = require("../../config/.env");
  * Router() é usado como um manipulador de rota, ou seja, definimos algumas rotas 
  * na instancia criada e depois usamos essas rotas dentro de uma outra rota. 
  */
-//const router = require("../../config/server").router;
-
-module.exports = (app, router) =>
+module.exports = (app, router, database) =>
 {
 	/* 
     * O método use() abaixo faz com que QUALQUER requisição, tanto GET, PUT, POST, DELETE, 
@@ -23,8 +21,6 @@ module.exports = (app, router) =>
     */
 	router.use((req, res, next) =>
 	{
-		//console.log("chamei /api/");
-
 		if(req.method === "OPTIONS")
 		{
 			console.log("method === OPTIONS");
@@ -37,7 +33,7 @@ module.exports = (app, router) =>
 			if(!auth)
 			{
 				let errors = [];
-				errors.push("Autorização requerida");
+				errors.push("authorization required");
 				/* 
 				 * Manda um erro de não autorizado, ou seja, significa que o usuário não 
 				 * mandou o cabeçalho Authorization
@@ -61,7 +57,7 @@ module.exports = (app, router) =>
 					    	{
 					    		if(error.name === "TokenExpiredError")
 					    		{
-									errors.push("Token expirado. Por favor faça login");
+									errors.push("Token expired. Please login");
 									/* 
 									 * Manda um erro de não autorizado, ou seja, significa que o usuário não 
 									 * está com o token válido 
@@ -77,17 +73,38 @@ module.exports = (app, router) =>
 					      } 
 					      else
 					      {
-					      	if(req.originalUrl === "/api" || req.originalUrl === "/api/")
-					      	{
-					      		res.status(200).json({message: "Bem vindo a minha api"});
-					      	}
-					      	else
-					      	{
-                           req.decodedToken = decoded;
-                           //console.log("id de quem está fazendo a chamada = " + decoded.id);
-					      		//console.log("chamei next()");
-					      		next();
-					      	}
+                        database.User.findOne(
+                        {
+                           attributes: ["token"],
+
+                           where:
+                           {
+                              id: decoded.id
+                           }
+                        })
+                        .then(user => 
+                        {
+                           if(user)
+                           {
+                              if(user.token == bearerToken)
+                              {
+                                 req.decodedToken = decoded;
+                                 next();
+                              }
+                              else
+                              {
+                                 errors.push("Token not valid anymore. Please login");
+                                 res.status(401).json({errors});
+                              }
+                           }
+                           else
+                           {
+                              let errors = [];
+                              errors.push("user not found");
+                              
+                              res.status(400).json({errors});
+                           }
+                        });
 					      }
 						});
 					}
@@ -95,7 +112,7 @@ module.exports = (app, router) =>
 				else
 				{
 					let errors = [];
-					errors.push("Cabeçalho de autorização deve conter 'Bearer <token>' ");
+					errors.push("Authorization header must contain 'Bearer <token>'");
 					/* 
 					 * Manda um erro de não autorizado, ou seja, significa que o usuário mandou
 					 * o cabeçalho Authorization mas no formato errado

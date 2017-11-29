@@ -47,6 +47,16 @@ module.exports = (sequelize, Sequelize) =>
             notNull: { msg: "password required" }
          }
       },
+
+      token:
+      {
+         type: Sequelize.STRING, 
+         allowNull: false,
+         validate:
+         {
+            notNull: { msg: "token required" }
+         }
+      }
    },
    {
       /* 

@@ -15,7 +15,7 @@
 const server = require("./config/server");
 const database = require("./config/database");
 
-require("./api/routes/api_routes")(server.app, server.router);
+require("./api/routes/api_routes")(server.app, server.router, database);
 require("./api/routes/unprotected/login")(server.app, database);
 require("./api/routes/unprotected/new_user")(server.app, database);
 require("./api/routes/protected/movie_rent")(server.router, database);
