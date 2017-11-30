@@ -4,8 +4,10 @@
   "description": "Backend developer exercise 4all",
   "main": "index.js",
   "scripts": {
+    "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules",
     "debug": "node --inspect index.js",
-    "dev": "nodemon index.js --exec babel-node"
+    "dev": "nodemon index.js --exec babel-node",
+    "prod": "node dist/index.js"
   },
   "jshintConfig": {
     "esversion": 6
