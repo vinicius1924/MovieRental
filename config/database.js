@@ -68,8 +68,7 @@ const sequelize = new Sequelize(databseName, userName, password,
    host: connectionHost,
    port: connectionPort,
    operatorsAliases,
-   // disable logging;
-   logging: false
+   logging: false //não mostra as consultas no terminal
 });
 
 const toExport = {};
@@ -90,8 +89,6 @@ toExport.UserRentedMovie.belongsTo(toExport.Movie, {foreignKey: "movie_id"});
 
 toExport.Movie.hasMany(toExport.UserRentedMovie, {foreignKey: "movie_id"});
 
-
-
 /* 
  * Aqui "MovieRental" é o source e "Movie" é o target.
  * 
@@ -105,25 +102,5 @@ toExport.MovieRental.hasMany(toExport.Movie,
    foreignKey: "movie_rental_id",
    onDelete: "CASCADE"
 });
-
-// toExport.Movie.belongsTo(toExport.MovieRental,
-// { 
-//    foreignKey: "movie_rental_id",
-//    onDelete: "CASCADE"
-// });
-
-// toExport.Movie.belongsToMany(toExport.User, 
-// {
-//    through: toExport.UserRentedMovie,
-//    foreignKey: "movie_id",
-//    timestamps: false
-// });
-
-// toExport.User.belongsToMany(toExport.Movie, 
-// {
-//    through: toExport.UserRentedMovie, 
-//    foreignKey: "user_id",
-//    timestamps: false
-// });
 
 module.exports = toExport;

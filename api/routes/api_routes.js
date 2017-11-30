@@ -102,7 +102,7 @@ module.exports = (app, router, database) =>
                               let errors = [];
                               errors.push("user not found");
                               
-                              res.status(400).json({errors});
+                              res.status(412).json({errors});
                            }
                         });
 					      }
@@ -117,7 +117,7 @@ module.exports = (app, router, database) =>
 					 * Manda um erro de não autorizado, ou seja, significa que o usuário mandou
 					 * o cabeçalho Authorization mas no formato errado
 					 */
-					res.status(401).json({errors});
+					res.status(400).json({errors});
 				}
 			}
 		}
