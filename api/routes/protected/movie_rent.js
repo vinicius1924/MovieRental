@@ -36,7 +36,7 @@ module.exports = (router, database) =>
             const userRentedMovie = database.UserRentedMovie.build(
             {
                user_id: req.decodedToken.id,
-               movie_id: parseInt(req.body.id)
+               movie_id: req.body.id
             });
       
             userRentedMovie.save().then(() =>
@@ -99,12 +99,18 @@ module.exports = (router, database) =>
                   
                   res.status(400).json({errors});
                }
+            })
+            .catch((error) =>
+            {
+               let errors = Utils.parseSequelizeErrors(error);
+               res.status(500).json({errors});
             });
          }
       })
       .catch((error) =>
       {
-         res.status(500).json({error});
+         let errors = Utils.parseSequelizeErrors(error);
+         res.status(500).json({errors});
       });
    });
 };

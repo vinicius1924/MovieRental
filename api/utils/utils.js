@@ -6,24 +6,31 @@ const Utils = class Utils
    {
       let arrayErrors = [];
 
-      _.forIn(sequelizeError.errors, (error) => 
+      if(sequelizeError.errors)
       {
-         if(error.message.indexOf("_UNIQUE") !== -1)
+         _.forIn(sequelizeError.errors, (error) => 
          {
-            if(error.path == "email_UNIQUE")
+            if(error.message.indexOf("_UNIQUE") !== -1)
             {
-               arrayErrors.push("email already in use");
+               if(error.path == "email_UNIQUE")
+               {
+                  arrayErrors.push("email already in use");
+               }
+               else
+               {
+                  arrayErrors.push(error.message.replace("_UNIQUE", ""));
+               }
             }
             else
             {
-               arrayErrors.push(error.message.replace("_UNIQUE", ""));
+               arrayErrors.push(error.message)
             }
-         }
-         else
-         {
-            arrayErrors.push(error.message)
-         }
-      });
+         });
+      }
+      else
+      {
+         arrayErrors.push(sequelizeError.message)
+      }
       
       return arrayErrors;
    }

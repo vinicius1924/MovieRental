@@ -5,6 +5,7 @@ module.exports = (router, database) =>
    router.route("/logout")
    .get((req, res) =>
    {
+      /* Remove o token do usuário do banco de dados */
       database.User.update(
       {
          token: " "

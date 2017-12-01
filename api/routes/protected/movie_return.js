@@ -14,8 +14,8 @@ module.exports = (router, database) =>
       { 
          where: 
          {
-            user_id: parseInt(req.decodedToken.id),
-            movie_id: parseInt(req.body.id)
+            user_id: req.decodedToken.id,
+            movie_id: req.body.id
          },
 
          limit: 1
@@ -65,15 +65,20 @@ module.exports = (router, database) =>
          }
          else
          {
+            /* 
+             * Caso o usuário não tenha conseguido devolver o filme.
+             * Procura o filme no banco de dados
+             */
             database.Movie.findOne(
             { 
                where: 
                {
-                  id: parseInt(req.body.id)
+                  id: req.body.id
                } 
             })
             .then(movie => 
             {
+               /* Se o filme foi encontrado significa que ele não alugou ou já devolveu o filme */
                if(movie)
                {
                   let errors = [];

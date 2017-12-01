@@ -23,7 +23,6 @@ module.exports = (app, router, database) =>
 	{
 		if(req.method === "OPTIONS")
 		{
-			console.log("method === OPTIONS");
 			next();
 		}
 		else
