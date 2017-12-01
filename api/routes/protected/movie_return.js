@@ -40,11 +40,21 @@ module.exports = (router, database) =>
             })
             .then((result) => 
             {
-               res.status(200).json(
+               database.Movie.findOne(
+               { 
+                  where: 
+                  {
+                     id: req.body.id
+                  } 
+               })
+               .then(movie => 
                {
-                  id: movie.id, 
-                  title: movie.title, 
-                  director: movie.director
+                  res.status(200).json(
+                  {
+                     id: movie.id, 
+                     title: movie.title, 
+                     director: movie.director
+                  });
                });
             })
             .catch((error) =>
