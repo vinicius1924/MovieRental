@@ -23,7 +23,8 @@ module.exports = (router, database) =>
       })
       .then((result) => 
       {
-         /* Testa se alguma linha foi afetada pelo update. Se foi alterada significa
+         /* 
+          * Testa se alguma linha foi afetada pelo update. Se foi alterada significa
           * que o filme estava disponível e foi alugado pelo usuário 
           */
          if(result[1] == 1)

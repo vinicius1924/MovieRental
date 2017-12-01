@@ -14,3 +14,7 @@ uma dependencia que será usada somente no desenvolvimento, portanto esse packag
 ser baixado quando o servidor estiver executando em produção.
 
 O modulo "mysql2" no packages.json serve para o sequelize funcionar com o MySQL.
+
+Se usarmos o script "build" que está no package.json, devemos copiar o arquivo ".env",
+que está na pasta "config", para dentro da pasta "dist/config". Assim poderemos usar 
+o script "prod" sem erros.
