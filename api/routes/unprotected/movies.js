@@ -4,11 +4,8 @@ module.exports = (app, database) =>
    .get((req, res) =>
    {
       database.sequelize.query("SELECT movie.id, movie.title, movie.director, " + 
-      "(movie.number_of_copies - COUNT(user_rented_movie.movie_id)) AS available_copies " +
-      "FROM movie " + 
-      "LEFT OUTER JOIN user_rented_movie " + 
-      "ON user_rented_movie.movie_id = movie.id " + 
-      "GROUP BY movie.id, movie.title, movie.director",
+      "(movie.number_of_copies - movie.located_copies) AS available_copies " +
+      "FROM movie",
       { 
          type: database.sequelize.QueryTypes.SELECT
       })
