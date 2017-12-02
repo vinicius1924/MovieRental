@@ -14,16 +14,16 @@ $ git clone https://github.com/vinicius1924/MovieRental.git
 
 Entre na pasta do projeto e vá até config/database.js. Dentro deste arquivo você deve modificar as seguintes variáveis de acordo com a sua configuração do MySQL:
 
-**connectionHost** - onde o MySQL está hospedado
-**connectionPort** - a porta usada para conectar no MySQL
-**userName** - o nome do usuário para acessar o banco de dados
-**password** - a senha do usuário para acessar o banco de dados
+**connectionHost** - onde o MySQL está hospedado  
+**connectionPort** - a porta usada para conectar no MySQL  
+**userName** - o nome do usuário para acessar o banco de dados  
+**password** - a senha do usuário para acessar o banco de dados  
 
 Dentro do arquivo "*package.json*" temos os seguintes scripts:
 
-**build** - cria uma pasta chamada dist com os arquivos .js na versão ES5
-**debug** - inicia a aplicação em modo debug. Mais informações em [node debugging guide](https://github.com/google/gson)
-**dev** - inicia a aplicação em modo de desenvolvimento com o nodemon que monitora alterações feitas nos arquivos da aplicação e reinicia automaticamente o servidor quando necessário
+**build** - cria uma pasta chamada dist com os arquivos .js na versão ES5  
+**debug** - inicia a aplicação em modo debug. Mais informações em [node debugging guide](https://github.com/google/gson)  
+**dev** - inicia a aplicação em modo de desenvolvimento com o nodemon que monitora alterações feitas nos arquivos da aplicação e reinicia automaticamente o servidor quando necessário  
 **prod** - inicia a aplicação em modo produção. Para iniciar a aplicação neste modo, primeiro deve-se executar o script "*build*" e depois deve-se copiar o arquivo "*.env*", que se encontra na pasta "*config/.env*", para dentro da pasta "*dist/config*"
 
 Para executar os scripts devemos estar dentro da pasta do projeto e digitar no terminal:
