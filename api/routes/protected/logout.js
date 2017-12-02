@@ -6,7 +6,7 @@ module.exports = (router, database) =>
    .get((req, res) =>
    {
       /* Remove o token do usuário do banco de dados */
-      database.User.update(
+      database.models.User.update(
       {
          token: " "
       },

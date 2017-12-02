@@ -72,7 +72,7 @@ module.exports = (app, router, database) =>
 					      } 
 					      else
 					      {
-                        database.User.findOne(
+                        database.models.User.findOne(
                         {
                            attributes: ["token"],
 

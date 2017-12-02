@@ -72,22 +72,25 @@ const sequelize = new Sequelize(databseName, userName, password,
 });
 
 const toExport = {};
+const models = {};
 
 toExport.Sequelize = Sequelize;
 toExport.sequelize = sequelize;
 
+
+
+
 /* Tabelas do banco de dados */
-toExport.User = require("../api/models/user")(sequelize, Sequelize);
-toExport.Movie = require("../api/models/movie")(sequelize, Sequelize);
-toExport.MovieRental = require("../api/models/movie_rental")(sequelize, Sequelize);
-toExport.UserRentedMovie = require("../api/models/user_rented_movie")(sequelize, Sequelize);
-toExport.findMovie = require("../api/database/queries")(toExport.Movie);
+models.User = require("../api/models/user")(sequelize, Sequelize);
+models.Movie = require("../api/models/movie")(sequelize, Sequelize);
+models.MovieRental = require("../api/models/movie_rental")(sequelize, Sequelize);
+models.UserRentedMovie = require("../api/models/user_rented_movie")(sequelize, Sequelize);
 
 /* Relações entre as tabelas */
-toExport.UserRentedMovie.belongsTo(toExport.User, {foreignKey: "user_id"});
-toExport.UserRentedMovie.belongsTo(toExport.Movie, {foreignKey: "movie_id"});
+models.UserRentedMovie.belongsTo(models.User, {foreignKey: "user_id"});
+models.UserRentedMovie.belongsTo(models.Movie, {foreignKey: "movie_id"});
 
-toExport.Movie.hasMany(toExport.UserRentedMovie, {foreignKey: "movie_id"});
+models.Movie.hasMany(models.UserRentedMovie, {foreignKey: "movie_id"});
 
 /* 
  * Aqui "MovieRental" é o source e "Movie" é o target.
@@ -97,10 +100,14 @@ toExport.Movie.hasMany(toExport.UserRentedMovie, {foreignKey: "movie_id"});
  * na tabela "Movie".
  * Instancias de "MovieRental" terão os accessors "getMovies" e "setMovies"
  */
-toExport.MovieRental.hasMany(toExport.Movie, 
+models.MovieRental.hasMany(models.Movie, 
 { 
    foreignKey: "movie_rental_id",
    onDelete: "CASCADE"
 });
+
+toExport.findMovie = require("../api/database/queries")(models.Movie);
+
+toExport.models = models;
 
 module.exports = toExport;

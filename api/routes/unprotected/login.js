@@ -12,7 +12,7 @@ module.exports = (app, database) =>
       {
          if(checkIfPasswordWasSent(req.body.password))
          {
-            database.User.findOne(
+            database.models.User.findOne(
             { 
                where: 
                {

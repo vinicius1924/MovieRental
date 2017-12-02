@@ -5,7 +5,7 @@ module.exports = (app, database) =>
    app.route("/new_user")
    .post((req, res) =>
    {
-      const user = database.User.build(
+      const user = database.models.User.build(
       {
          name: req.body.name,
          email: req.body.email,

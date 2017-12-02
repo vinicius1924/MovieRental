@@ -97,7 +97,7 @@ module.exports = (router, database) =>
        * Tenta deletar na tabela "user_rented_movie" com o id do usuario
        * e id do filme que ele quer devolver 
        */
-      database.UserRentedMovie.destroy(
+      database.models.UserRentedMovie.destroy(
       { 
          where: 
          {

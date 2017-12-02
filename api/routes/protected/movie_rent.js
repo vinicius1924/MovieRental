@@ -43,7 +43,7 @@ const handleMovieRented = (database, req, res) =>
     * insere na tabela "user_rented_movie" o id do usuário e o id do filme
     * que ele alugou 
     */
-   const userRentedMovie = database.UserRentedMovie.build(
+   const userRentedMovie = database.models.UserRentedMovie.build(
    {
       user_id: req.decodedToken.id,
       movie_id: req.body.id
