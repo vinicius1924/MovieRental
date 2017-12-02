@@ -1,20 +1,24 @@
-O arquivo package.json tem definido jshintConfig que é uma opção para configurar o 
+- O arquivo package.json tem definido jshintConfig que é uma opção para configurar o 
 JSHint(foi instalado como uma extensao do visual studio code) que é uma ferramenta que interpreta os 
 arquivos javascript e busca erros como varáveis não utilizadas, espaços em branco no 
 final de linha, ausência de ponto-e-vírgula (um ponto polêmico) entre outros.
 
-No arquivo package.json existe a key "scripts" e para rodarmos esses scripts utilizamos o 
+- No arquivo package.json existe a key "scripts" e para rodarmos esses scripts utilizamos o 
 comando "npm run <nome-do-script>"
 
-Quando usamos o comando "npm run dev" rodamos o nodemon que monitora alterações feitas 
+- Quando usamos o comando "npm run dev" rodamos o nodemon que monitora alterações feitas 
 nos arquivos da aplicação e reinicia automaticamente o servidor quando necessário
 
-o package nodemon está listado na key "devDependencies" do arquivo package.json pois ele é 
+- O package nodemon está listado na key "devDependencies" do arquivo package.json pois ele é 
 uma dependencia que será usada somente no desenvolvimento, portanto esse package não precisa 
 ser baixado quando o servidor estiver executando em produção.
 
-O modulo "mysql2" no packages.json serve para o sequelize funcionar com o MySQL.
+- O modulo "mysql2" no packages.json serve para o sequelize funcionar com o MySQL.
 
-Se usarmos o script "build" que está no package.json, devemos copiar o arquivo ".env",
+- Se usarmos o script "build" que está no package.json, devemos copiar o arquivo ".env",
 que está na pasta "config", para dentro da pasta "dist/config". Assim poderemos usar 
 o script "prod" sem erros.
+
+- O arquivo .npmrc é o arquivo de configuração do npm. Quando formos usar o npm no projeto
+ele irá usar as configurações contidas nesse arquivo
+

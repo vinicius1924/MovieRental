@@ -1,30 +1,13 @@
 const Utils = require("../../utils/utils");
 const _ = require("lodash");
 
-const findMovie = (database, id, res) =>
-{
-   /* Procura os dados do filme que foi alugado e retorna como resposta */
-   return database.Movie.findOne(
-   { 
-      where: 
-      {
-         id: id
-      } 
-   })
-   .catch((error) =>
-   {
-      let errors = Utils.parseSequelizeErrors(error);
-      res.status(500).json({errors});
-   });
-};
-
 const handleMovieNotReturned = (database, id, res) =>
 {
    /* 
     * Caso o usuário não tenha conseguido devolver o filme.
     * Procura o filme no banco de dados
     */
-   findMovie(database, id, res)
+   database.findMovie(id, res)
    .then(movie => 
    {
       /* Se o filme foi encontrado significa que ele não alugou ou já devolveu o filme */
@@ -68,7 +51,7 @@ const updateLocatedCopies = (database, id, res) =>
    })
    .then((result) => 
    {
-      findMovie(database, id, res)
+      database.findMovie(id, res)
       .then(movie => 
       {
          res.status(200).json(

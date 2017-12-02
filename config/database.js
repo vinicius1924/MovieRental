@@ -81,6 +81,7 @@ toExport.User = require("../api/models/user")(sequelize, Sequelize);
 toExport.Movie = require("../api/models/movie")(sequelize, Sequelize);
 toExport.MovieRental = require("../api/models/movie_rental")(sequelize, Sequelize);
 toExport.UserRentedMovie = require("../api/models/user_rented_movie")(sequelize, Sequelize);
+toExport.findMovie = require("../api/database/queries")(toExport.Movie);
 
 /* Relações entre as tabelas */
 toExport.UserRentedMovie.belongsTo(toExport.User, {foreignKey: "user_id"});
