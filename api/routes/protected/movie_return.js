@@ -1,6 +1,110 @@
 const Utils = require("../../utils/utils");
 const _ = require("lodash");
 
+const findMovie = (database, id, res) =>
+{
+   /* Procura os dados do filme que foi alugado e retorna como resposta */
+   return database.Movie.findOne(
+   { 
+      where: 
+      {
+         id: id
+      } 
+   })
+   .catch((error) =>
+   {
+      let errors = Utils.parseSequelizeErrors(error);
+      res.status(500).json({errors});
+   });
+};
+
+const handleMovieNotReturned = (database, id, res) =>
+{
+   /* 
+    * Caso o usuário não tenha conseguido devolver o filme.
+    * Procura o filme no banco de dados
+    */
+   findMovie(database, id, res)
+   .then(movie => 
+   {
+      /* Se o filme foi encontrado significa que ele não alugou ou já devolveu o filme */
+      if(movie)
+      {
+         let errors = [];
+         errors.push("you not rent or you already returned the movie with id " + id);
+
+         res.status(404).json({errors});
+      }
+      else
+      {
+         /* 
+         * Se o filme NÃO foi encontrado significa que foi enviado um id que não existe
+         * no banco de dados 
+         */
+         let errors = [];
+         errors.push("movie with id " + id + " not found");
+         
+         res.status(400).json({errors});
+      }
+   })
+   .catch((error) =>
+   {
+      let errors = Utils.parseSequelizeErrors(error);
+      res.status(500).json({errors});
+   });
+};
+
+const updateLocatedCopies = (database, id, res) =>
+{
+   database.sequelize.query("UPDATE movie SET located_copies = located_copies - 1 " +
+   "WHERE movie.id = :id",
+   { 
+      replacements: 
+      { 
+         id: id
+      },
+      
+      type: database.sequelize.QueryTypes.UPDATE
+   })
+   .then((result) => 
+   {
+      findMovie(database, id, res)
+      .then(movie => 
+      {
+         res.status(200).json(
+         {
+            id: movie.id, 
+            title: movie.title, 
+            director: movie.director
+         });
+      });
+   })
+   .catch((error) =>
+   {
+      let errors = Utils.parseSequelizeErrors(error);
+      res.status(500).json({errors});
+   });
+};
+
+const handleDestroyResult = (result) =>
+{
+   return new Promise((resolve, reject) => 
+   {
+      /* 
+       * Se result for igual a 1 significa que conseguiu deletar da tabela, portanto
+       * deve-se diminuir o número de cópias locadas 
+       */
+      if(result)
+      {
+         resolve(true);
+      }
+      else
+      {
+         reject(false);
+      }
+   });
+};
+
 module.exports = (router, database) =>
 {
    router.route("/movie_return")
@@ -20,90 +124,14 @@ module.exports = (router, database) =>
 
          limit: 1
       })
-      .then((result) => 
+      .then(handleDestroyResult)
+      .then((result) =>
       {
-         /* 
-          * Se result for igual a 1 significa que conseguiu deletar da tabela, portanto
-          * deve-se diminuir o número de cópias locadas 
-          */
-         if(result)
-         {
-            database.sequelize.query("UPDATE movie SET located_copies = located_copies - 1 " +
-            "WHERE movie.id = :id",
-            { 
-               replacements: 
-               { 
-                  id: req.body.id
-               },
-               
-               type: database.sequelize.QueryTypes.UPDATE
-            })
-            .then((result) => 
-            {
-               database.Movie.findOne(
-               { 
-                  where: 
-                  {
-                     id: req.body.id
-                  } 
-               })
-               .then(movie => 
-               {
-                  res.status(200).json(
-                  {
-                     id: movie.id, 
-                     title: movie.title, 
-                     director: movie.director
-                  });
-               });
-            })
-            .catch((error) =>
-            {
-               let errors = Utils.parseSequelizeErrors(error);
-               res.status(500).json({errors});
-            });
-         }
-         else
-         {
-            /* 
-             * Caso o usuário não tenha conseguido devolver o filme.
-             * Procura o filme no banco de dados
-             */
-            database.Movie.findOne(
-            { 
-               where: 
-               {
-                  id: req.body.id
-               } 
-            })
-            .then(movie => 
-            {
-               /* Se o filme foi encontrado significa que ele não alugou ou já devolveu o filme */
-               if(movie)
-               {
-                  let errors = [];
-                  errors.push("you not rent or you already returned the movie with id " + req.body.id);
-      
-                  res.status(404).json({errors});
-               }
-               else
-               {
-                  /* 
-                   * Se o filme NÃO foi encontrado significa que foi enviado um id que não existe
-                   * no banco de dados 
-                   */
-                  let errors = [];
-                  errors.push("movie with id " + req.body.id + " not found");
-                  
-                  res.status(400).json({errors});
-               }
-            })
-            .catch((error) =>
-            {
-               let errors = Utils.parseSequelizeErrors(error);
-               res.status(500).json({errors});
-            });
-         }
+         updateLocatedCopies(database, req.body.id, res);
+      },
+      (error) =>
+      {
+         handleMovieNotReturned(database, req.body.id, res);
       })
       .catch((error) =>
       {
