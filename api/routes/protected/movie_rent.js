@@ -1,5 +1,4 @@
 const Utils = require("../../utils/utils");
-const _ = require("lodash");
 
 const handleMovieNotRented = (database, req, res) =>
 {
@@ -7,7 +6,7 @@ const handleMovieNotRented = (database, req, res) =>
     * Caso o usuário não tenha conseguido alugar o filme.
     * Procura o filme no banco de dados
     */
-   database.findMovie(req.body.id, res)
+   database.queries.findMovie(req.body.id, res)
    .then(movie => 
    {
       /* Se o filme foi encontrado significa que não haviam copias disponíveis */
@@ -52,7 +51,7 @@ const handleMovieRented = (database, req, res) =>
    userRentedMovie.save()
    .then(() =>
    {
-      database.findMovie(req.body.id, res)
+      database.queries.findMovie(req.body.id, res)
       .then((movie) =>
       {
          res.status(200).json(

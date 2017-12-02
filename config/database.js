@@ -1,15 +1,6 @@
 const Sequelize = require("sequelize");
 
 /* 
- * Usado para que a mensagem do validation "notNull" funcione juntamente com
- * "allowNull" sem causar problemas 
- */
-Sequelize.Validator.notNull = function (item)
-{
-   return !this.isNull(item);
-};
-
-/* 
  * Se não for definido "host" na criação do objeto Sequelize irá usar o host default
  * que é "localhost"
  */
@@ -22,6 +13,15 @@ const connectionPort = 3306;
 const databseName = "movierentaldb";
 const userName = "teste";
 const password = "teste";
+
+/* 
+ * Usado para que a mensagem do validation "notNull" funcione juntamente com
+ * "allowNull" sem causar problemas 
+ */
+Sequelize.Validator.notNull = function (item)
+{
+   return !this.isNull(item);
+};
 
 const Op = Sequelize.Op;
 const operatorsAliases =
@@ -77,9 +77,6 @@ const models = {};
 toExport.Sequelize = Sequelize;
 toExport.sequelize = sequelize;
 
-
-
-
 /* Tabelas do banco de dados */
 models.User = require("../api/models/user")(sequelize, Sequelize);
 models.Movie = require("../api/models/movie")(sequelize, Sequelize);
@@ -106,8 +103,11 @@ models.MovieRental.hasMany(models.Movie,
    onDelete: "CASCADE"
 });
 
-toExport.findMovie = require("../api/database/queries")(models.Movie);
+const queries = require("../api/database/queries")(models);
 
+/* exporta os models para serem usados */
 toExport.models = models;
+/* exporta as queries mais usadas para não precisar ficar repetindo código */
+toExport.queries = queries;
 
 module.exports = toExport;

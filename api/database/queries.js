@@ -1,9 +1,11 @@
-module.exports = (Movie) =>
+module.exports = (models) =>
 {
+   const queries = {};
+
    const findMovie = (id, res) =>
    {
       /* Procura os dados do filme que foi alugado e retorna como resposta */
-      return Movie.findOne(
+      return models.Movie.findOne(
       { 
          where: 
          {
@@ -17,5 +19,7 @@ module.exports = (Movie) =>
       });
    };
 
-   return findMovie;
+   queries.findMovie = findMovie;
+
+   return queries;
 };
