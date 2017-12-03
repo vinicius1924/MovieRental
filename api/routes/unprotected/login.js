@@ -1,7 +1,47 @@
 /* jsonwebtoken é usado para criar, assinar e verificar tokens */
 const jwt = require("jsonwebtoken");
-const env = require('../../../config/.env');
+const env = require("../../../config/.env");
 const bcrypt = require("bcrypt");
+
+let handleUserNotFoundOrInvalidPassword = (res) =>
+{
+   let errors = [];
+   errors.push("username/password invalid");
+   res.status(404).json({errors});
+};
+
+let handleUserFound = (user, email, password, res) =>
+{
+   /* Compara a senha digitada pelo usuário com a senha do banco de dados */
+   bcrypt.compare(password, user.password).then((response) =>
+   {
+      /* se response == true então a senha digitada pelo usuário está certa */
+      if(response)
+      {
+         /* 
+          * Se a senha está correta cria um token com validade de 1 hora e devolve 
+          * para o usuário
+          */
+         const token = jwt.sign({id: user.id, email: email}, env.jsonWebTokenSecret,
+         {
+            expiresIn: "1d" // token expira em 1 dia
+         });
+
+         user.update(
+         {
+            token: token
+         })
+         .then(() =>
+         {
+            res.status(200).json({name: user.name, email: user.email, token: token});
+         });
+      }
+      else
+      {
+         handleUserNotFoundOrInvalidPassword(res);
+      }
+   });
+};
 
 let checkIfEmailWasSent = (email) =>
 {
@@ -49,43 +89,11 @@ module.exports = (app, database) =>
              */
             if(user)
             {
-               /* Compara a senha digitada pelo usuário com a senha do banco de dados */
-               bcrypt.compare(req.body.password, user.password).then((response) =>
-               {
-                  /* se response == true então a senha digitada pelo usuário está certa */
-                  if(response)
-                  {
-                     /* 
-                      * Se a senha está correta cria um token com validade de 1 hora e devolve 
-                      * para o usuário
-                      */
-                     const token = jwt.sign({id: user.id, email: req.body.email}, env.jsonWebTokenSecret,
-                     {
-                        expiresIn: "1d" // token expira em 1 dia
-                     });
-
-                     user.update(
-                     {
-                        token: token
-                     })
-                     .then(() =>
-                     {
-                        res.status(200).json({name: user.name, email: user.email, token: token});
-                     });
-                  }
-                  else
-                  {
-                     let errors = [];
-                     errors.push("username/password invalid");
-                     res.status(500).json({errors});
-                  }
-               });
+               handleUserFound(user, req.body.email, req.body.password, res);
             }
             else
             {
-               let errors = [];
-               errors.push("username/password invalid");
-               res.status(500).json({errors});
+               handleUserNotFoundOrInvalidPassword(res);
             }
          })
          .catch((error) =>
