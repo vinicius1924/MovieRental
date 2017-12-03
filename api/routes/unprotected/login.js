@@ -3,86 +3,105 @@ const jwt = require("jsonwebtoken");
 const env = require('../../../config/.env');
 const bcrypt = require("bcrypt");
 
+let checkIfEmailWasSent = (email) =>
+{
+   if(email)
+   {
+      return true;
+   }
+   else
+   {
+      return false;
+   }
+};
+
+let checkIfPasswordWasSent = (password) =>
+{
+   if(password)
+   {
+      return true;
+   }
+   else
+   {
+      return false;
+   }
+};
+
 module.exports = (app, database) =>
 {
    app.route("/login")
    .post((req, res) =>
    {
-      if(checkIfEmailWasSent(req.body.email))
+      if(checkIfEmailWasSent(req.body.email) && checkIfPasswordWasSent(req.body.password))
       {
-         if(checkIfPasswordWasSent(req.body.password))
-         {
-            database.models.User.findOne(
-            { 
-               where: 
-               {
-                  email: req.body.email
-               } 
-            })
-            .then(user => 
+         database.models.User.findOne(
+         { 
+            where: 
             {
-               /* 
-                * o parametro user será a primeira entrada da tabela user com o email enviado no corpo 
-                * da requisição ou null
-                */
-               if(user)
+               email: req.body.email
+            } 
+         })
+         .then(user => 
+         {
+            /* 
+             * o parametro user será a primeira entrada da tabela user com o email enviado no corpo 
+             * da requisição ou null
+             */
+            if(user)
+            {
+               /* Compara a senha digitada pelo usuário com a senha do banco de dados */
+               bcrypt.compare(req.body.password, user.password).then((response) =>
                {
-                  /* Compara a senha digitada pelo usuário com a senha do banco de dados */
-                  bcrypt.compare(req.body.password, user.password).then((response) =>
+                  /* se response == true então a senha digitada pelo usuário está certa */
+                  if(response)
                   {
-                     /* se response == true então a senha digitada pelo usuário está certa */
-                     if(response)
+                     /* 
+                      * Se a senha está correta cria um token com validade de 1 hora e devolve 
+                      * para o usuário
+                      */
+                     const token = jwt.sign({id: user.id, email: req.body.email}, env.jsonWebTokenSecret,
                      {
-                        /* 
-                        * Se a senha está correta cria um token com validade de 1 hora e devolve 
-                        * para o usuário
-                        */
-                        const token = jwt.sign({id: user.id, email: req.body.email}, env.jsonWebTokenSecret,
-                        {
-                           expiresIn: "1d" // token expira em 1 dia
-                        });
+                        expiresIn: "1d" // token expira em 1 dia
+                     });
 
-                        user.update(
-                        {
-                           token: token
-                        })
-                        .then(() =>
-                        {
-                           res.status(200).json({name: user.name, email: user.email, token: token});
-                        });
-                     }
-                     else
+                     user.update(
                      {
-                        let errors = [];
-                        errors.push("username/password invalid");
-                        res.status(500).json({errors});
-                     }
-                  });
-               }
-               else
-               {
-                  let errors = [];
-                  errors.push("username/password invalid");
-                  res.status(500).json({errors});
-               }
-            })
-            .catch((error) =>
+                        token: token
+                     })
+                     .then(() =>
+                     {
+                        res.status(200).json({name: user.name, email: user.email, token: token});
+                     });
+                  }
+                  else
+                  {
+                     let errors = [];
+                     errors.push("username/password invalid");
+                     res.status(500).json({errors});
+                  }
+               });
+            }
+            else
             {
-               let errors = Utils.parseSequelizeErrors(error);
+               let errors = [];
+               errors.push("username/password invalid");
                res.status(500).json({errors});
-            });
-         }
-         else
+            }
+         })
+         .catch((error) =>
          {
-            let errors = [];
-            errors.push("password must be sent");
+            let errors = Utils.parseSequelizeErrors(error);
             res.status(500).json({errors});
-         }
+         });
       }
       else
       {
          let errors = [];
-         errors.push("email must be sent");
+
+         if(!checkIfEmailWasSent(req.body.email))
+         {
+            errors.push("email must be sent");
+         }
 
          if(!checkIfPasswordWasSent(req.body.password))
          {
@@ -93,28 +112,3 @@ module.exports = (app, database) =>
       }
    });
 };
-
-
-function checkIfEmailWasSent(email)
-{
-   if(email)
-   {
-      return true;
-   }
-   else
-   {
-      return false;
-   }
-}
-
-function checkIfPasswordWasSent(password)
-{
-   if(password)
-   {
-      return true;
-   }
-   else
-   {
-      return false;
-   }
-}
