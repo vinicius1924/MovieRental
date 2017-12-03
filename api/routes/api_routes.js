@@ -5,15 +5,7 @@ let checkTokenData = (database, decodedToken, bearerToken, req, res, next) =>
 {
    let errors = [];
 
-   database.models.User.findOne(
-   {
-      attributes: ["token"],
-
-      where:
-      {
-         id: decodedToken.id
-      }
-   })
+   database.queries.findUserById(decodedToken.id, res)
    .then(user => 
    {
       if(user)
@@ -34,7 +26,7 @@ let checkTokenData = (database, decodedToken, bearerToken, req, res, next) =>
          let errors = [];
          errors.push("user not found");
          
-         res.status(412).json({errors});
+         res.status(404).json({errors});
       }
    });
 };
@@ -76,6 +68,29 @@ let verifyToken = (bearerToken, database, req, res, next) =>
          checkTokenData(database, decoded, bearerToken, req, res, next);
       }
    });
+};
+
+let checkAuthorizationHeader = (auth) =>
+{
+   if(auth.startsWith("Bearer "))
+   {
+      var bearer = auth.split(" ");
+      var bearerToken = bearer[1];
+      let errors = [];
+      
+      if(auth === "Bearer " + bearerToken)
+      {
+         return bearerToken;
+      }
+      else
+      {
+         return false;
+      }
+   }
+   else
+   {
+      return false;
+   }
 };
 
 let authorizationHeaderNotSent = (res) =>
@@ -124,17 +139,12 @@ module.exports = (app, router, database) =>
 			}
 			else
 			{
-				if(auth.startsWith("Bearer "))
-				{
-					var bearer = auth.split(" ");
-					var bearerToken = bearer[1];
-					let errors = [];
-					
-					if(auth === "Bearer " + bearerToken)
-					{
-						verifyToken(bearerToken, database, req, res, next);
-					}
-				}
+            let bearerToken = checkAuthorizationHeader(auth);
+            
+            if(bearerToken)
+            {
+               verifyToken(bearerToken, database, req, res, next);
+            }
 				else
 				{
 					let errors = [];

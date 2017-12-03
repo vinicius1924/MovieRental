@@ -74,13 +74,7 @@ module.exports = (app, database) =>
    {
       if(checkIfEmailWasSent(req.body.email) && checkIfPasswordWasSent(req.body.password))
       {
-         database.models.User.findOne(
-         { 
-            where: 
-            {
-               email: req.body.email
-            } 
-         })
+         database.queries.findUserByEmail(req.body.email, res)
          .then(user => 
          {
             /* 
