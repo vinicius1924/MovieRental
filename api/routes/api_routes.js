@@ -1,6 +1,94 @@
 const jwt = require("jsonwebtoken"); // usado para criar, assinar e verificar tokens
 const env = require("../../config/.env");
 
+let checkTokenData = (database, decodedToken, bearerToken, req, res, next) =>
+{
+   let errors = [];
+
+   database.models.User.findOne(
+   {
+      attributes: ["token"],
+
+      where:
+      {
+         id: decodedToken.id
+      }
+   })
+   .then(user => 
+   {
+      if(user)
+      {
+         if(user.token == bearerToken)
+         {
+            req.decodedToken = decodedToken;
+            next();
+         }
+         else
+         {
+            errors.push("Token not valid anymore. Please login");
+            res.status(401).json({errors});
+         }
+      }
+      else
+      {
+         let errors = [];
+         errors.push("user not found");
+         
+         res.status(412).json({errors});
+      }
+   });
+};
+
+let handleTokenError = (error, res) =>
+{
+   let errors = [];
+
+   if(error.name === "TokenExpiredError")
+   {
+     errors.push("Token expired. Please login");
+     /* 
+      * Manda um erro de não autorizado, ou seja, significa que o usuário não 
+      * está com o token válido 
+      */
+     res.status(401).json({errors});
+   }
+
+   if(error.name === "JsonWebTokenError")
+   {
+     errors.push(error.message);
+     res.status(500).json({errors});
+   }
+};
+
+let verifyToken = (bearerToken, database, req, res, next) =>
+{
+   let errors = [];
+
+   jwt.verify(bearerToken, env.jsonWebTokenSecret, (error, decoded) =>
+   {
+      /* Testa se contém algum erro com o token */
+      if(error)
+      {
+         handleTokenError(error, res);
+      } 
+      else
+      {
+         checkTokenData(database, decoded, bearerToken, req, res, next);
+      }
+   });
+};
+
+let authorizationHeaderNotSent = (res) =>
+{
+   let errors = [];
+   errors.push("authorization required");
+   /* 
+    * Manda um erro de não autorizado, ou seja, significa que o usuário não 
+    * mandou o cabeçalho Authorization
+    */
+   res.status(401).json({errors});
+};
+
 /* 
  * Router() é usado como um manipulador de rota, ou seja, definimos algumas rotas 
  * na instancia criada e depois usamos essas rotas dentro de uma outra rota. 
@@ -27,17 +115,12 @@ module.exports = (app, router, database) =>
 		}
 		else
 		{
+         /* Retorna o campo "authorization" do cabeçalho da requisição */
 			var auth = req.get("authorization");
 
 			if(!auth)
 			{
-				let errors = [];
-				errors.push("authorization required");
-				/* 
-				 * Manda um erro de não autorizado, ou seja, significa que o usuário não 
-				 * mandou o cabeçalho Authorization
-				 */
-				res.status(401).json({errors});
+				authorizationHeaderNotSent(res);
 			}
 			else
 			{
@@ -49,63 +132,7 @@ module.exports = (app, router, database) =>
 					
 					if(auth === "Bearer " + bearerToken)
 					{
-						jwt.verify(bearerToken, env.jsonWebTokenSecret, (error, decoded) =>
-						{
-							/* Testa se contém algum erro com o token */
-				    		if(error)
-					    	{
-					    		if(error.name === "TokenExpiredError")
-					    		{
-									errors.push("Token expired. Please login");
-									/* 
-									 * Manda um erro de não autorizado, ou seja, significa que o usuário não 
-									 * está com o token válido 
-									 */
-									res.status(401).json({errors});
-					    		}
-
-					    		if(error.name === "JsonWebTokenError")
-					    		{
-									errors.push(error.message);
-									res.status(500).json({errors});
-					    		}
-					      } 
-					      else
-					      {
-                        database.models.User.findOne(
-                        {
-                           attributes: ["token"],
-
-                           where:
-                           {
-                              id: decoded.id
-                           }
-                        })
-                        .then(user => 
-                        {
-                           if(user)
-                           {
-                              if(user.token == bearerToken)
-                              {
-                                 req.decodedToken = decoded;
-                                 next();
-                              }
-                              else
-                              {
-                                 errors.push("Token not valid anymore. Please login");
-                                 res.status(401).json({errors});
-                              }
-                           }
-                           else
-                           {
-                              let errors = [];
-                              errors.push("user not found");
-                              
-                              res.status(412).json({errors});
-                           }
-                        });
-					      }
-						});
+						verifyToken(bearerToken, database, req, res, next);
 					}
 				}
 				else
