@@ -38,3 +38,10 @@ require("./api/routes/protected/logout")(router, database);
 require("./api/routes/protected/movie_rent")(router, database);
 require("./api/routes/protected/movie_return")(router, database);
 require("./config/server")(app);
+
+const toExport = {};
+
+toExport.app = app;
+toExport.database = database;
+
+module.exports = toExport;

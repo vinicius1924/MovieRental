@@ -10,9 +10,15 @@ const connectionHost = "localhost";
  * do dialect definido no objeto Sequelize, no caso do mysql a porta default é "3306"
  */
 const connectionPort = 3306;
-const databseName = "movierentaldb";
+let databaseName = "movierentaldb";
 const userName = "teste";
 const password = "teste";
+
+/* Conecta no banco de dados para teste quando executamos o script "npm run test" */
+if(process.env.NODE_ENV === "test")
+{ 
+   databaseName = "movierentaldb_test";
+}
 
 /* 
  * Usado para que a mensagem do validation "notNull" funcione juntamente com
@@ -62,7 +68,7 @@ const operatorsAliases =
   $col: Op.col
 };
 
-const sequelize = new Sequelize(databseName, userName, password, 
+const sequelize = new Sequelize(databaseName, userName, password, 
 {
    dialect: "mysql",
    host: connectionHost,
